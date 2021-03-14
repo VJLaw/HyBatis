@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.sandi.genericdb.dao.GenericDao">
+
+    <insert id="save" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate">
+        INSERT INTO ${tableName}
+        <foreach collection="saveFieldNames" item="saveFieldName" index="index" open="(" close=")" separator=",">
+            `${saveFieldName}`
+        </foreach>
+        VALUES
+        <foreach collection="saveValues" item="fields" separator=",">
+            <foreach collection="fields" item="paramMap" separator="," open="(" close=")">
+                #{paramMap.value${paramMap.type}}
+            </foreach>
+        </foreach>
+    </insert>
+
+    <select id="nextId" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate" resultType="java.lang.Long">
+        SELECT nextId(#{pkColumnValue}) as newId
+    </select>
+
+    <select id="select" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate" resultType="java.util.Map">
+        ${sql}
+    </select>
+
+    <select id="count" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate" resultType="java.lang.Integer">
+        ${sql}
+    </select>
+
+    <update id="update" keyColumn="id" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate">
+        ${sql}
+    </update>
+
+    <update id="updateObject" keyColumn="id" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate">
+        UPDATE ${tableName} SET
+        <foreach collection="updateFieldList" item="updateField" index="index" open="" close="" separator=",">
+            `${updateField.key}` = #{updateField.value${updateField.type}}
+        </foreach>
+         WHERE `${keyValueTemplate.key}` = #{keyValueTemplate.value${keyValueTemplate.type}}
+    </update>
+
+    <delete id="remove" parameterType="cn.com.sandi.genericdb.vo.SqlTemplate">
+        ${sql}
+    </delete>
+</mapper>
